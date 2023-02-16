@@ -19,8 +19,8 @@ let package = Package(
     targets: [
         .binaryTarget(
             name: "Eureka",
-            url: "https://www.dropbox.com/s/oapfnqm2bqcljeh/Eureka.zip?dl=1",
-            checksum: "ff1922606fdb1617e840bc9f0a9d1aef0e23d13e701e3b933e569b7132c6cb7d"
+            url: "https://www.dropbox.com/s/h0s4nm2awuy2ea2/Eureka.zip?dl=1",
+            checksum: "2b14a10e644caa573334e13afe23d6bdd54e9ce4e4285c1ff65e1c80ea15da7d"
         )
     ]
 )
