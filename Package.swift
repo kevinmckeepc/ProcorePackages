@@ -15,12 +15,13 @@ let package = Package(
         )
     ],
     dependencies: [
+        .package(url: "https://github.com/realm/SwiftLint.git", branch: "main"),
     ],
     targets: [
         .binaryTarget(
             name: "Eureka",
-            url: "https://www.dropbox.com/s/l3c3wmlms0i8inq/Eureka.zip?dl=1",
-            checksum: "10752882941cda24aaf6216dd58d887cf8b5e7ac89452948d4c23e789f0a1451"
+            url: "https://www.dropbox.com/s/h0s4nm2awuy2ea2/Eureka.zip?dl=1",
+            checksum: "2b14a10e644caa573334e13afe23d6bdd54e9ce4e4285c1ff65e1c80ea15da7d"
         )
     ]
 )
