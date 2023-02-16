@@ -15,6 +15,7 @@ let package = Package(
         )
     ],
     dependencies: [
+        .package(url: "https://github.com/realm/SwiftLint.git", branch: "main"),
     ],
     targets: [
         .binaryTarget(
