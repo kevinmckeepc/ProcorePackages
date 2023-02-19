@@ -83,6 +83,7 @@ do
 #    fi
 
     # Fix https://bugs.swift.org/browse/SR-14195 (caused by https://bugs.swift.org/browse/SR-898)
+
     swiftModuleDirectory="${archivePath}.xcarchive/Products/Library/Frameworks/$FRAMEWORK_NAME.framework/Modules/$FRAMEWORK_NAME.swiftmodule"
     fixInvalidModuleInterfaces $swiftModuleDirectory
 
@@ -115,6 +116,7 @@ echo "################################ CHECKSUM ################################
 echo $checksum
 echo "##########################################################################"
 echo "\n"
+echo "📦 Package: ${WORKING_DIR}/${FRAMEWORK_NAME}.zip"
 
 #######################################################################
 # 6) TODO: Upload the zip file (Artifactory?) and save the file url to

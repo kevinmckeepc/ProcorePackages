@@ -10,18 +10,23 @@ let package = Package(
     ],
     products: [
         .library(
-            name: "ProcorePackages",
+            name: "Eureka",
             targets: ["Eureka"]
         )
     ],
     dependencies: [
         .package(url: "https://github.com/realm/SwiftLint.git", branch: "main"),
     ],
+
     targets: [
         .binaryTarget(
             name: "Eureka",
-            url: "https://www.dropbox.com/s/tb1u7k1ufw23coo/Eureka.zip?dl=1",
-            checksum: "22eecf22040125057b03905d934b30f95a82eae7b24f6de36e2594edf9dd42b8"
+            url: "https://www.dropbox.com/s/7urvzkbqrsaimrr/Eureka.zip?dl=1",
+            checksum: "bde687c446feca3e3584d39e9d7e9cb384e6a0026b1acdd7b0218e21ed12b2d8"
+        ),
+        .testTarget(
+            name: "EurekaTests",
+            dependencies: ["Eureka"]
         )
     ]
 )
