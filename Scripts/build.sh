@@ -51,6 +51,9 @@ prepare() {
         "$xcodeProjectFile"
     sed -i '' "s|SKIP_INSTALL = YES;|SKIP_INSTALL = NO;\nBUILD_LIBRARY_FOR_DISTRIBUTION = YES;|g" \
         "$xcodeProjectFile"
+    # Note: This can probably be improved, but for right now just inject this variable
+    sed -i '' '709i\'$'\n'' ENABLE_TESTABILITY = YES;' \
+            "$xcodeProjectFile"
 
     # Edit the Package.swift to make the library dynamic
     echo "🐳 Updating the library type to be dynamic"
