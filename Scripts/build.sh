@@ -51,10 +51,11 @@ prepare() {
         "$xcodeProjectFile"
     sed -i '' "s|SKIP_INSTALL = YES;|SKIP_INSTALL = NO;\nBUILD_LIBRARY_FOR_DISTRIBUTION = YES;|g" \
         "$xcodeProjectFile"
-    # Note: This can probably be improved, but for right now just inject this variable
-    sed -i '' '709i\'$'\n'' ENABLE_TESTABILITY = YES;' \
-            "$xcodeProjectFile"
-
+    # Note: This can probably be improved, but for right now just inject this variable into line 709
+#    sed -i '' '709 i \
+#        ENABLE_TESTABILITY = YES;
+#    ' "$xcodeProjectFile"
+    
     # Edit the Package.swift to make the library dynamic
     echo "🐳 Updating the library type to be dynamic"
     TARGET_DECLARATION="name: \"$FRAMEWORK_NAME\", targets"
@@ -137,10 +138,10 @@ computeChecksum() {
     echo "\n"
 }
 
-#######################################################################
+##########################################################################
 # Fix for bug that emits an invalid module interface
 # See: https://bugs.swift.org/browse/SR-14195
-#######################################################################
+##########################################################################
 repairSwiftModuleInterfaces() {
 
     interfaceFiles="$1/*.swiftinterface"
@@ -150,7 +151,6 @@ repairSwiftModuleInterfaces() {
         "GenericMultivaluedSection"
         "MultivaluedSection"
     )
-
     echo "🧹Repairing swiftmodule interfaces"
     for className in "${invalidClassExtensions[@]}"
     do
@@ -160,71 +160,19 @@ repairSwiftModuleInterfaces() {
     done
 }
 
-clean
-prepare
-buildArchives
-repairSwiftModuleInterfaces "$SIMULATOR_ARCHIVE_PATH/${ARCHIVE_SWIFT_MODULE_DIR}"
-repairSwiftModuleInterfaces "$IOS_DEVICE_ARCHIVE_PATH/${ARCHIVE_SWIFT_MODULE_DIR}"
-repairSwiftModuleInterfaces "$CATALYST_ARCHIVE_PATH/${ARCHIVE_SWIFT_MODULE_DIR}"
-buildXCFramework
-zipXCFramework
-computeChecksum
+##########################################################################
+# Establish run order
+##########################################################################
+main() {
+    clean
+    prepare
+    buildArchives
+    repairSwiftModuleInterfaces "$SIMULATOR_ARCHIVE_PATH/${ARCHIVE_SWIFT_MODULE_DIR}"
+    repairSwiftModuleInterfaces "$IOS_DEVICE_ARCHIVE_PATH/${ARCHIVE_SWIFT_MODULE_DIR}"
+    repairSwiftModuleInterfaces "$CATALYST_ARCHIVE_PATH/${ARCHIVE_SWIFT_MODULE_DIR}"
+    buildXCFramework
+    zipXCFramework
+    computeChecksum
+}
 
-#######################################################################
-# 2) Create platform specific framework files
-#######################################################################
-#for index in "${!SDKS[@]}"
-#do
-#    configuration="Release"
-#    sdk="${SDKS[$index]}"
-#    destination="${DESTINATIONS[$index]}"
-##    destination="${DESTINATIONS[$index]}"
-##    platformName="${destination##*=}"
-#    #archiveName="${FRAMEWORK_NAME}-${platformName// /_}"
-#    archiveName="${FRAMEWORK_NAME}-${sdk}.framework"
-#    archivePath="${ARCHIVES_DIR}/${archiveName}"
-#
-#    # For each platform, create an archive
-#    echo "🐳 Building Archive for Platform [${sdk}] [$destination]"
-#    xcodebuild archive \
-#        -scheme "${FRAMEWORK_NAME}" \
-#        -sdk $sdk \
-#        -destination "${destination}" \
-#        -configuration $configuration \
-#        SKIP_INSTALL=YES \
-#        BUILD_LIBRARY_FOR_DISTRIBUTION=YES \
-#        BUILD_DIR=$BUILD_DIR
-#
-##        -archivePath="${archivePath}" \
-#
-##        BUILD_DIR=$BUILD_DIR \
-##        ONLY_ACTIVE_ARCH=YES \
-#        ARCHS="x86_64 arm64" \
-#
-##    xcodebuild archive \
-##        -project "${FRAMEWORK_NAME}.xcodeproj" \
-##        -scheme "${FRAMEWORK_NAME}" \
-##        -destination "${destination}" \
-##        -archivePath "${archivePath}" \
-##        SKIP_INSTALL=NO \
-##        BUILD_LIBRARY_FOR_DISTRIBUTION=YES \
-##        ONLY_ACTIVE_ARCH=YES \
-##        -quiet
-##        OTHER_SWIFT_FLAGS="-verify-emitted-module-interface" \
-#
-#    # Add the archive to the list of arguments
-#
-#
-#    FRAMEWORK_PATH="${BUILD_DIR}/Release-${sdk}/${FRAMEWORK_NAME}.framework"
-#    CREATE_FRAMEWORK_ARGUMENTS+=" -framework ${FRAMEWORK_PATH}"
-##    if [$index == 0]
-##    then
-##        CREATE_FRAMEWORK_ARGUMENTS+=" -debug-symbols ${archivePath}.xcarchive/dSYMs/${FRAMEWORK_NAME}.framework.dSYM"
-##    fi
-#
-#    # Fix https://bugs.swift.org/browse/SR-14195 (caused by https://bugs.swift.org/browse/SR-898)
-#
-##    swiftModuleDirectory="${archivePath}.xcarchive/Products/Library/Frameworks/$FRAMEWORK_NAME.framework/Modules/$FRAMEWORK_NAME.swiftmodule"
-##    fixInvalidModuleInterfaces $swiftModuleDirectory
-#
-#done
+main
