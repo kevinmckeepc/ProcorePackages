@@ -19,10 +19,14 @@ let package = Package(
     ],
 
     targets: [
+//        .binaryTarget(
+//            name: "Eureka",
+//            path: "Scripts/Build/Eureka.xcframework"
+//        ),
         .binaryTarget(
             name: "Eureka",
-            url: "https://www.dropbox.com/s/7urvzkbqrsaimrr/Eureka.zip?dl=1",
-            checksum: "bde687c446feca3e3584d39e9d7e9cb384e6a0026b1acdd7b0218e21ed12b2d8"
+            url: "https://www.dropbox.com/s/8qsmqqkte8synhz/Eureka.zip?dl=1",
+            checksum: "8696a079946731b8e33f4c8af90199e6d83c8829ce3fd6e93155f8fb805c7506"
         ),
         .testTarget(
             name: "EurekaTests",
