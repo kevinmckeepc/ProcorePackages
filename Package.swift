@@ -25,8 +25,8 @@ let package = Package(
 //        ),
         .binaryTarget(
             name: "Eureka",
-            url: "https://www.dropbox.com/s/vqevdcs0bg87t2z/Eureka.zip?dl=1",
-            checksum: "4702d4de22e38455b448e2a77e5d52dcc57196734c23c9351645d81a1e6624f7"
+            url: "https://www.dropbox.com/s/rxihz8y268edfco/Eureka.zip?dl=1",
+            checksum: "26001cc2fb82daee4a219dce643ece3d1dd92d1f4a8101be58ddf7bf9251abec"
         ),
         .testTarget(
             name: "EurekaTests",

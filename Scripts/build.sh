@@ -61,7 +61,10 @@ prepare() {
     TARGET_DECLARATION="name: \"$FRAMEWORK_NAME\", targets"
     DYNAMIC_TARGET_DECLARATION="name: \"$FRAMEWORK_NAME\", type: .dynamic, targets"
     sed -i '' "s|$TARGET_DECLARATION|$DYNAMIC_TARGET_DECLARATION|g" "$CHECKOUT_DIR/Package.swift"
-
+    
+    SOURCE_DECLARATION="path: \"Source\""
+    SOURCE_DECLARATION_REPLACEMENT="path: \"Source\", swiftSettings: [.unsafeFlags([\"-enable-testing\"])]"
+    sed -i '' "s|$SOURCE_DECLARATION|$SOURCE_DECLARATION_REPLACEMENT|g" "$CHECKOUT_DIR/Package.swift"
 }
 
 ##########################################################################
@@ -139,18 +142,14 @@ computeChecksum() {
 }
 
 ##########################################################################
-# Fix for bug that emits an invalid module interface
+# Fix for bug that emits an invalid module interface -
+# "redundant same-type constraints" warnings
 # See: https://bugs.swift.org/browse/SR-14195
 ##########################################################################
 repairSwiftModuleInterfaces() {
 
     interfaceFiles="$1/*.swiftinterface"
-    invalidClassExtensions=(
-        "SelectableSection"
-        "BaseMultivaluedSection"
-        "GenericMultivaluedSection"
-        "MultivaluedSection"
-    )
+    invalidClassExtensions=("SelectableSection" "BaseMultivaluedSection" "GenericMultivaluedSection" "MultivaluedSection")
     echo "🧹Repairing swiftmodule interfaces"
     for className in "${invalidClassExtensions[@]}"
     do
