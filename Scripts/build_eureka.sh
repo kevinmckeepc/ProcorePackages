@@ -45,26 +45,21 @@ prepare() {
     # 2) Repair the project file by stream editing the build variables
     xcodeProjectFile="$CHECKOUT_DIR/$FRAMEWORK_NAME.xcodeproj/project.pbxproj"
     echo "🐳 Repairing the Project file"
+    # Update the deployment target
     sed -i '' "s|IPHONEOS_DEPLOYMENT_TARGET = 9.0;|IPHONEOS_DEPLOYMENT_TARGET = 11.0;|g" \
         "$xcodeProjectFile"
+    # Flip the enable bitcode variable (to remove warning noise)
     sed -i '' "s|ENABLE_BITCODE = YES;|ENABLE_BITCODE = NO;|g" \
         "$xcodeProjectFile"
+    # Flip the skip install variable and force build for distribution
     sed -i '' "s|SKIP_INSTALL = YES;|SKIP_INSTALL = NO;\nBUILD_LIBRARY_FOR_DISTRIBUTION = YES;|g" \
         "$xcodeProjectFile"
-    # Note: This can probably be improved, but for right now just inject this variable into line 709
-#    sed -i '' '709 i \
-#        ENABLE_TESTABILITY = YES;
-#    ' "$xcodeProjectFile"
     
     # Edit the Package.swift to make the library dynamic
     echo "🐳 Updating the library type to be dynamic"
     TARGET_DECLARATION="name: \"$FRAMEWORK_NAME\", targets"
     DYNAMIC_TARGET_DECLARATION="name: \"$FRAMEWORK_NAME\", type: .dynamic, targets"
     sed -i '' "s|$TARGET_DECLARATION|$DYNAMIC_TARGET_DECLARATION|g" "$CHECKOUT_DIR/Package.swift"
-    
-    SOURCE_DECLARATION="path: \"Source\""
-    SOURCE_DECLARATION_REPLACEMENT="path: \"Source\", swiftSettings: [.unsafeFlags([\"-enable-testing\"])]"
-    sed -i '' "s|$SOURCE_DECLARATION|$SOURCE_DECLARATION_REPLACEMENT|g" "$CHECKOUT_DIR/Package.swift"
 }
 
 ##########################################################################
@@ -126,6 +121,10 @@ zipXCFramework() {
     echo "🐳 Building XCFramework Zip File"
     rm -rf "${XCFRAMEWORK_ZIP_PATH}"
     ditto -c -k --sequesterRsrc --keepParent "${XCFRAMEWORK_PATH}" "${XCFRAMEWORK_ZIP_PATH}"
+    
+    # TODO: Upload the zip file to Artifactory and replace the url value
+    #zipUrl="https\:\/\/public_url" # TODO: Need to escape all the special characters
+    #sed -i '' "24s/\".*\"/\"${zipUrl}\"/" "${WORKING_DIR}/../Package.swift"
 }
 
 ##########################################################################
@@ -139,6 +138,9 @@ computeChecksum() {
     echo $checksum
     echo "##########################################################################"
     echo "\n"
+
+    # Update the package checksum
+    sed -i '' "25s/\".*\"/\"${checksum}\"/" "${WORKING_DIR}/../Package.swift"
 }
 
 ##########################################################################

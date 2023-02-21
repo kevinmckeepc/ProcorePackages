@@ -19,10 +19,6 @@ let package = Package(
     ],
 
     targets: [
-//        .binaryTarget(
-//            name: "Eureka",
-//            path: "Scripts/Build/Eureka.xcframework"
-//        ),
         .binaryTarget(
             name: "Eureka",
             url: "https://www.dropbox.com/s/rxihz8y268edfco/Eureka.zip?dl=1",
