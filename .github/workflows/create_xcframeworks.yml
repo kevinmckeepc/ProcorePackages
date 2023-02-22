@@ -7,20 +7,25 @@ on:
     branches:
       - main
 jobs:
+
   build:
     name: Build XCFrameworks
     runs-on: macos-latest
+
   steps:
+
     - name: Checkout ProcorePackage
       uses: actions/checkout@v3
       with:
         fetch-depth: "0"
+
     - name: Checkout Eureka
       uses: actions/checkout@v3
       with:
         repository: xmartlabs/Eureka
         ref: 5.3.6
         fetch-depth: "0"
+
     - name: Build XCFrameworks
       working-directory: Scripts
       run: |
