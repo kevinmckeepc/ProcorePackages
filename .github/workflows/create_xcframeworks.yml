@@ -13,10 +13,6 @@ jobs:
     runs-on: macos-latest
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: '0'
       
       - name: Checkout Eureka
         uses: actions/checkout@v3
@@ -25,7 +21,12 @@ jobs:
           repository: xmartlabs/Eureka
           ref: 5.3.6
       
-      - name: Build XCFrameworks
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: '0'
+
+      - name: Build Eureka
         working-directory: Scripts
         run: |
             ./build_eureka.sh
