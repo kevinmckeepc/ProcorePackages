@@ -12,6 +12,6 @@ jobs:
 
     steps:
       - name: Build XCFrameworks
-        working-directory: ./Scripts
+        working-directory: Scripts
         run: |
             ./build_eureka.sh
