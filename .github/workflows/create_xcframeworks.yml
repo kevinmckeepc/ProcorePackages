@@ -29,4 +29,6 @@ jobs:
       - name: Build Eureka
         working-directory: Scripts
         run: |
+            ls -la ../
+            ls -la ../../
             ./build_eureka.sh
