@@ -28,6 +28,6 @@ jobs:
           path: 'Checkouts/ProcorePackages'
 
       - name: Build Eureka
-        working-directory: Scripts
+        working-directory: 'Checkouts/ProcorePackages/Scripts'
         run: |
             ./build_eureka_github.sh
