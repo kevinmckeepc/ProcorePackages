@@ -28,6 +28,6 @@ jobs:
       
 
       - name: Build Eureka
-        working-directory: '../Scripts'
+        working-directory: 'Scripts'
         run: |
             ./build_eureka_github.sh
