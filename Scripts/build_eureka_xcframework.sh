@@ -82,25 +82,25 @@ buildArchives() {
         BUILD_LIBRARIES_FOR_DISTRIBUTION=YES \
         -quiet
 
-    echo "🐳 Building iOS device archive ..."
-    xcodebuild archive \
-        -project "${FRAMEWORK_NAME}.xcodeproj" \
-        -scheme ${FRAMEWORK_NAME} \
-        -destination "generic/platform=iOS" \
-        -archivePath "${IOS_DEVICE_ARCHIVE_PATH}" \
-        -sdk iphoneos SKIP_INSTALL=NO \
-        BUILD_LIBRARIES_FOR_DISTRIBUTION=YES \
-        -quiet
-
-    echo "🐳 Building Mac Catalyst archive ..."
-    xcodebuild archive \
-        -project "${FRAMEWORK_NAME}.xcodeproj" \
-        -scheme ${FRAMEWORK_NAME} \
-        -destination "generic/platform=macOS,variant=Mac Catalyst" \
-        -archivePath "${CATALYST_ARCHIVE_PATH}" \
-        SKIP_INSTALL=NO \
-        BUILD_LIBRARIES_FOR_DISTRIBUTION=YES \
-        -quiet
+#    echo "🐳 Building iOS device archive ..."
+#    xcodebuild archive \
+#        -project "${FRAMEWORK_NAME}.xcodeproj" \
+#        -scheme ${FRAMEWORK_NAME} \
+#        -destination "generic/platform=iOS" \
+#        -archivePath "${IOS_DEVICE_ARCHIVE_PATH}" \
+#        -sdk iphoneos SKIP_INSTALL=NO \
+#        BUILD_LIBRARIES_FOR_DISTRIBUTION=YES \
+#        -quiet
+#
+#    echo "🐳 Building Mac Catalyst archive ..."
+#    xcodebuild archive \
+#        -project "${FRAMEWORK_NAME}.xcodeproj" \
+#        -scheme ${FRAMEWORK_NAME} \
+#        -destination "generic/platform=macOS,variant=Mac Catalyst" \
+#        -archivePath "${CATALYST_ARCHIVE_PATH}" \
+#        SKIP_INSTALL=NO \
+#        BUILD_LIBRARIES_FOR_DISTRIBUTION=YES \
+#        -quiet
 }
 
 ##########################################################################
@@ -108,10 +108,11 @@ buildArchives() {
 ##########################################################################
 buildXCFramework() {
     echo "🐳  Combining archives into XCFramework"
+#        -framework "$IOS_DEVICE_ARCHIVE_PATH/$ARCHIVE_LIBRARY_DIR" \
+#        -framework "$CATALYST_ARCHIVE_PATH/$ARCHIVE_LIBRARY_DIR" \
+
     xcodebuild -create-xcframework \
         -framework "$SIMULATOR_ARCHIVE_PATH/$ARCHIVE_LIBRARY_DIR" \
-        -framework "$IOS_DEVICE_ARCHIVE_PATH/$ARCHIVE_LIBRARY_DIR" \
-        -framework "$CATALYST_ARCHIVE_PATH/$ARCHIVE_LIBRARY_DIR" \
         -output "${XCFRAMEWORK_PATH}"
 }
 
