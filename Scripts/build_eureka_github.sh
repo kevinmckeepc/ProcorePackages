@@ -6,10 +6,12 @@
 # https://onesignal.com/blog/xcframeworks-guide/
 
 FRAMEWORK_NAME="Eureka"
+FRAMEWORK_TAG="5.3.6"
+FRAMEWORK_URL="git@github.com:xmartlabs/Eureka.git"
 CREATE_FRAMEWORK_ARGUMENTS=()
 WORKING_DIR="$(pwd)"
 BUILD_DIR="${WORKING_DIR}/Build"
-CHECKOUT_DIR="../../Checkouts/${FRAMEWORK_NAME}"
+CHECKOUT_DIR="${BUILD_DIR}/Checkouts/${FRAMEWORK_NAME}"
 SIMULATOR_ARCHIVE_PATH="${BUILD_DIR}/${FRAMEWORK_NAME}-iOS_Simulator.xcarchive"
 IOS_DEVICE_ARCHIVE_PATH="${BUILD_DIR}/${FRAMEWORK_NAME}-iOS.xcarchive"
 CATALYST_ARCHIVE_PATH="${BUILD_DIR}/${FRAMEWORK_NAME}-MacCatalyst.xcarchive"
@@ -31,6 +33,15 @@ clean() {
 #######################################################################
 prepare() {
     echo "🐳 Preparing build"
+#    # 1) Clone Eureka
+#    if [ ! -d $CHECKOUT_DIR ]
+#    then
+#        echo "🐳 Cloning $FRAMEWORK_NAME"
+#        git clone --branch $FRAMEWORK_TAG $FRAMEWORK_URL "$CHECKOUT_DIR"
+#    fi
+    cd $CHECKOUT_DIR
+    
+    
     # 2) Repair the project file by stream editing the build variables
     xcodeProjectFile="$CHECKOUT_DIR/$FRAMEWORK_NAME.xcodeproj/project.pbxproj"
     echo "🐳 Repairing the Project file"
