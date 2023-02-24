@@ -9,8 +9,16 @@ FRAMEWORK_NAME="Eureka"
 FRAMEWORK_TAG="5.3.6"
 FRAMEWORK_URL="git@github.com:xmartlabs/Eureka.git"
 CREATE_FRAMEWORK_ARGUMENTS=()
-#WORKING_DIR="$(pwd)"
-WORKING_DIR=$GITHUB_WORKSPACE
+WORKING_DIR="$(pwd)"
+
+# Check if we are running inside Github or Circle
+if [[ ! -z "$GITHUB_WORKSPACE" ]]
+then
+    # Running inside Github
+    echo "🎯 Running build inside Github"
+    WORKING_DIR=$GITHUB_WORKSPACE
+fi
+
 BUILD_DIR="${WORKING_DIR}/Build"
 CHECKOUT_DIR="${BUILD_DIR}/Checkouts/${FRAMEWORK_NAME}"
 SIMULATOR_ARCHIVE_PATH="${BUILD_DIR}/${FRAMEWORK_NAME}-iOS_Simulator.xcarchive"
@@ -26,7 +34,11 @@ ARCHIVE_SWIFT_MODULE_DIR="$ARCHIVE_LIBRARY_DIR/Modules/$FRAMEWORK_NAME.swiftmodu
 #######################################################################
 clean() {
     echo "🐳 Cleaning old build files"
-#    rm -rf $BUILD_DIR
+    if [ -z "$GITHUB_WORKSPACE" ]
+    then
+        echo "🐳 Removing $BUILD_DIR"
+        rm -rf $BUILD_DIR
+    fi
 }
 
 #######################################################################
@@ -34,14 +46,18 @@ clean() {
 #######################################################################
 prepare() {
     echo "🐳 Preparing build"
-#    # 1) Clone Eureka
-#    if [ ! -d $CHECKOUT_DIR ]
-#    then
-#        echo "🐳 Cloning $FRAMEWORK_NAME"
-#        git clone --branch $FRAMEWORK_TAG $FRAMEWORK_URL "$CHECKOUT_DIR"
-#    fi
-    cd $CHECKOUT_DIR
     
+    if [ -z "$GITHUB_WORKSPACE" ]
+    then
+        # 1) Clone Eureka
+        if [ ! -d $CHECKOUT_DIR ]
+        then
+            echo "🐳 Cloning $FRAMEWORK_NAME"
+            git clone --branch $FRAMEWORK_TAG $FRAMEWORK_URL "$CHECKOUT_DIR"
+        fi
+    fi
+
+    cd $CHECKOUT_DIR
     
     # 2) Repair the project file by stream editing the build variables
     xcodeProjectFile="$CHECKOUT_DIR/$FRAMEWORK_NAME.xcodeproj/project.pbxproj"
@@ -82,25 +98,25 @@ buildArchives() {
         BUILD_LIBRARIES_FOR_DISTRIBUTION=YES \
         -quiet
 
-#    echo "🐳 Building iOS device archive ..."
-#    xcodebuild archive \
-#        -project "${FRAMEWORK_NAME}.xcodeproj" \
-#        -scheme ${FRAMEWORK_NAME} \
-#        -destination "generic/platform=iOS" \
-#        -archivePath "${IOS_DEVICE_ARCHIVE_PATH}" \
-#        -sdk iphoneos SKIP_INSTALL=NO \
-#        BUILD_LIBRARIES_FOR_DISTRIBUTION=YES \
-#        -quiet
-#
-#    echo "🐳 Building Mac Catalyst archive ..."
-#    xcodebuild archive \
-#        -project "${FRAMEWORK_NAME}.xcodeproj" \
-#        -scheme ${FRAMEWORK_NAME} \
-#        -destination "generic/platform=macOS,variant=Mac Catalyst" \
-#        -archivePath "${CATALYST_ARCHIVE_PATH}" \
-#        SKIP_INSTALL=NO \
-#        BUILD_LIBRARIES_FOR_DISTRIBUTION=YES \
-#        -quiet
+    echo "🐳 Building iOS device archive ..."
+    xcodebuild archive \
+        -project "${FRAMEWORK_NAME}.xcodeproj" \
+        -scheme ${FRAMEWORK_NAME} \
+        -destination "generic/platform=iOS" \
+        -archivePath "${IOS_DEVICE_ARCHIVE_PATH}" \
+        -sdk iphoneos SKIP_INSTALL=NO \
+        BUILD_LIBRARIES_FOR_DISTRIBUTION=YES \
+        -quiet
+
+    echo "🐳 Building Mac Catalyst archive ..."
+    xcodebuild archive \
+        -project "${FRAMEWORK_NAME}.xcodeproj" \
+        -scheme ${FRAMEWORK_NAME} \
+        -destination "generic/platform=macOS,variant=Mac Catalyst" \
+        -archivePath "${CATALYST_ARCHIVE_PATH}" \
+        SKIP_INSTALL=NO \
+        BUILD_LIBRARIES_FOR_DISTRIBUTION=YES \
+        -quiet
 }
 
 ##########################################################################
@@ -108,11 +124,11 @@ buildArchives() {
 ##########################################################################
 buildXCFramework() {
     echo "🐳  Combining archives into XCFramework"
-#        -framework "$IOS_DEVICE_ARCHIVE_PATH/$ARCHIVE_LIBRARY_DIR" \
-#        -framework "$CATALYST_ARCHIVE_PATH/$ARCHIVE_LIBRARY_DIR" \
 
     xcodebuild -create-xcframework \
         -framework "$SIMULATOR_ARCHIVE_PATH/$ARCHIVE_LIBRARY_DIR" \
+        -framework "$IOS_DEVICE_ARCHIVE_PATH/$ARCHIVE_LIBRARY_DIR" \
+        -framework "$CATALYST_ARCHIVE_PATH/$ARCHIVE_LIBRARY_DIR" \
         -output "${XCFRAMEWORK_PATH}"
 }
 
@@ -167,6 +183,7 @@ repairSwiftModuleInterfaces() {
 # Establish run order
 ##########################################################################
 main() {
+    clean
     prepare
     buildArchives
     repairSwiftModuleInterfaces "$SIMULATOR_ARCHIVE_PATH/${ARCHIVE_SWIFT_MODULE_DIR}"
