@@ -26,7 +26,7 @@ ARCHIVE_SWIFT_MODULE_DIR="$ARCHIVE_LIBRARY_DIR/Modules/$FRAMEWORK_NAME.swiftmodu
 #######################################################################
 clean() {
     echo "🐳 Cleaning old build files"
-    rm -rf $BUILD_DIR
+#    rm -rf $BUILD_DIR
 }
 
 #######################################################################
