@@ -1,4 +1,4 @@
-name: Build Eureka XCFramework
+name: Create XCFrameworks
 on:
   push:
     branches:
@@ -9,15 +9,18 @@ on:
 jobs:
 
   build:
-    name: Build XCFrameworks
+    name: Build Eureka XCFramework
     runs-on: macos-latest
 
     steps:
+
+      # 1) Checkout the SwiftPackages Repo
       - name: Checkout
         uses: actions/checkout@v3
         with:
           fetch-depth: '0'
 
+      # 2) Checkout the Eureka Repo
       - name: Checkout Eureka
         uses: actions/checkout@v3
         with:
@@ -26,7 +29,7 @@ jobs:
           ref: 5.3.6
           path: 'Build/Checkouts/Eureka'
       
-
+      # 3) Run the build script
       - name: Build Eureka
         working-directory: 'Scripts'
         run: |
