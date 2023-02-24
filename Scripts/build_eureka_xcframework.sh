@@ -10,6 +10,15 @@ FRAMEWORK_TAG="5.3.6"
 FRAMEWORK_URL="git@github.com:xmartlabs/Eureka.git"
 CREATE_FRAMEWORK_ARGUMENTS=()
 WORKING_DIR="$(pwd)"
+
+# Check if we are running inside Github or Circle
+if [[ ! -z "$GITHUB_WORKSPACE" ]]
+then
+    # Running inside Github
+    echo "🎯 Running build inside Github"
+    WORKING_DIR=$GITHUB_WORKSPACE
+fi
+
 BUILD_DIR="${WORKING_DIR}/Build"
 CHECKOUT_DIR="${BUILD_DIR}/Checkouts/${FRAMEWORK_NAME}"
 SIMULATOR_ARCHIVE_PATH="${BUILD_DIR}/${FRAMEWORK_NAME}-iOS_Simulator.xcarchive"
@@ -25,7 +34,11 @@ ARCHIVE_SWIFT_MODULE_DIR="$ARCHIVE_LIBRARY_DIR/Modules/$FRAMEWORK_NAME.swiftmodu
 #######################################################################
 clean() {
     echo "🐳 Cleaning old build files"
-    rm -rf $BUILD_DIR
+    if [ -z "$GITHUB_WORKSPACE" ]
+    then
+        echo "🐳 Removing $BUILD_DIR"
+        rm -rf $BUILD_DIR
+    fi
 }
 
 #######################################################################
@@ -33,14 +46,18 @@ clean() {
 #######################################################################
 prepare() {
     echo "🐳 Preparing build"
-    # 1) Clone Eureka
-    if [ ! -d $CHECKOUT_DIR ]
-    then
-        echo "🐳 Cloning $FRAMEWORK_NAME"
-        git clone --branch $FRAMEWORK_TAG $FRAMEWORK_URL "$CHECKOUT_DIR"
-    fi
-    cd $CHECKOUT_DIR
     
+    if [ -z "$GITHUB_WORKSPACE" ]
+    then
+        # 1) Clone Eureka
+        if [ ! -d $CHECKOUT_DIR ]
+        then
+            echo "🐳 Cloning $FRAMEWORK_NAME"
+            git clone --branch $FRAMEWORK_TAG $FRAMEWORK_URL "$CHECKOUT_DIR"
+        fi
+    fi
+
+    cd $CHECKOUT_DIR
     
     # 2) Repair the project file by stream editing the build variables
     xcodeProjectFile="$CHECKOUT_DIR/$FRAMEWORK_NAME.xcodeproj/project.pbxproj"
@@ -107,6 +124,7 @@ buildArchives() {
 ##########################################################################
 buildXCFramework() {
     echo "🐳  Combining archives into XCFramework"
+
     xcodebuild -create-xcframework \
         -framework "$SIMULATOR_ARCHIVE_PATH/$ARCHIVE_LIBRARY_DIR" \
         -framework "$IOS_DEVICE_ARCHIVE_PATH/$ARCHIVE_LIBRARY_DIR" \
@@ -140,7 +158,7 @@ computeChecksum() {
     echo "\n"
 
     # Update the package checksum
-    sed -i '' "25s/\".*\"/\"${checksum}\"/" "${WORKING_DIR}/../Package.swift"
+    sed -i '' "25s/\".*\"/\"${checksum}\"/" "${WORKING_DIR}/Package.swift"
 }
 
 ##########################################################################
