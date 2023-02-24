@@ -141,7 +141,7 @@ computeChecksum() {
     echo "\n"
 
     # Update the package checksum
-    sed -i '' "25s/\".*\"/\"${checksum}\"/" "${WORKING_DIR}/../Package.swift"
+    sed -i '' "25s/\".*\"/\"${checksum}\"/" "${WORKING_DIR}/Package.swift"
 }
 
 ##########################################################################
@@ -166,7 +166,6 @@ repairSwiftModuleInterfaces() {
 # Establish run order
 ##########################################################################
 main() {
-    clean
     prepare
     buildArchives
     repairSwiftModuleInterfaces "$SIMULATOR_ARCHIVE_PATH/${ARCHIVE_SWIFT_MODULE_DIR}"

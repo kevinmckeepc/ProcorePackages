@@ -1,4 +1,4 @@
-name: XCFramework Builder
+name: Build Eureka XCFramework
 on:
   push:
     branches:
@@ -30,4 +30,4 @@ jobs:
       - name: Build Eureka
         working-directory: 'Scripts'
         run: |
-            ./build_eureka_github.sh
+            ./build_eureka_xcframework.sh
